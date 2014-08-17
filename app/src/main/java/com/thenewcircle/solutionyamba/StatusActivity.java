@@ -1,6 +1,8 @@
 package com.thenewcircle.solutionyamba;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +30,35 @@ public class StatusActivity extends Activity implements TextWatcher {
     private int warningLength;
     private int warningColor;
     private int okColor;
+    private PostTask postTask;
+
+    private class PostTask extends AsyncTask<String, Integer, Long> {
+        private static final String TAG = "thenewcircle.yamba.PostTask";
+
+        @Override
+        protected Long doInBackground(String... messages) {
+            long start = System.currentTimeMillis();
+            YambaClient client = new YambaClient("student", "password");
+            for(String message : messages) {
+                try {
+                    client.postStatus(message);
+                } catch (YambaClientException e) {
+                    Log.d(TAG, "Unable to post message " + message, e);
+                }
+            }
+            return System.currentTimeMillis() - start;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+            Log.d(TAG, "Posted " + aLong);
+            AlertDialog.Builder builder = new AlertDialog.Builder(StatusActivity.this);
+            builder.setTitle("Post time").setMessage(aLong + " ms");
+            builder.setCancelable(true);
+            builder.create().show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +66,13 @@ public class StatusActivity extends Activity implements TextWatcher {
         setContentView(R.layout.activity_status);
         Button buttonPostStatus = (Button) findViewById(R.id.buttonPostStatus);
         editTextStatusMessage = (EditText) findViewById(R.id.editTextStatusMessage);
-
+        postTask = new PostTask();
         buttonPostStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Posting: " + editTextStatusMessage.getText());
-                YambaClient client = new YambaClient("student", "password");
-                try {
-                    client.postStatus(editTextStatusMessage.getText().toString());
-                } catch (YambaClientException e) {
-                    Log.e(TAG, "Error posting " + editTextStatusMessage.getText().toString(), e);
-                }
+                String message = editTextStatusMessage.getText().toString();
+                postTask.execute(new String[]{message});
             }
         });
 
