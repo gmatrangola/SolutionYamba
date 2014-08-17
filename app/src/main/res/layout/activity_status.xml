@@ -26,5 +26,6 @@
         android:text="@string/post"
         android:id="@+id/buttonPostStatus"
         android:layout_below="@+id/editTextStatusMessage"
-        android:layout_alignRight="@+id/editTextStatusMessage" />
+        android:layout_alignRight="@+id/editTextStatusMessage"
+        android:onClick="buttonPostStatus" />
 </RelativeLayout>

@@ -2,11 +2,15 @@ package com.thenewcircle.solutionyamba;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class StatusActivity extends Activity {
+
+    private static final String TAG = "newcircle.Yamba." + StatusActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +18,10 @@ public class StatusActivity extends Activity {
         setContentView(R.layout.activity_status);
     }
 
+
+    public void buttonPostStatus(View view) {
+        Log.d(TAG, "buttonPostStatus");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
