@@ -4,13 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -21,20 +17,17 @@ import com.marakana.android.yamba.clientlib.YambaClientException;
 import org.w3c.dom.Text;
 
 
-public class StatusActivity extends Activity implements TextWatcher {
+public class StatusActivity extends Activity implements StatusFragment.PostHandler {
 
     private static final String TAG = "newcircle.Yamba." + StatusActivity.class.getSimpleName();
-    private EditText editTextStatusMessage;
-    private TextView textViewCharsRemaining;
-    private int maxCharacters;
-    private int warningLength;
-    private int warningColor;
-    private int okColor;
     private PostTask postTask;
 
-    private class PostTask extends AsyncTask<String, Integer, Long> {
-        private static final String TAG = "thenewcircle.yamba.PostTask";
+    @Override
+    public void postMessage(String message) {
+        postTask.execute(new String[]{message});
+    }
 
+    private class PostTask extends AsyncTask<String, Integer, Long> {
         @Override
         protected Long doInBackground(String... messages) {
             long start = System.currentTimeMillis();
@@ -63,25 +56,9 @@ public class StatusActivity extends Activity implements TextWatcher {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_status);
-        Button buttonPostStatus = (Button) findViewById(R.id.buttonPostStatus);
-        editTextStatusMessage = (EditText) findViewById(R.id.editTextStatusMessage);
         postTask = new PostTask();
-        buttonPostStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Posting: " + editTextStatusMessage.getText());
-                String message = editTextStatusMessage.getText().toString();
-                postTask.execute(new String[]{message});
-            }
-        });
+        setContentView(R.layout.activity_status);
 
-        editTextStatusMessage.addTextChangedListener(this);
-        textViewCharsRemaining = (TextView) findViewById(R.id.textViewCharsRemaining);
-        maxCharacters = getResources().getInteger(R.integer.maximumCharacters);
-        warningLength = getResources().getInteger(R.integer.warningLength);
-        warningColor = getResources().getColor(R.color.warningColor);
-        okColor = getResources().getColor(android.R.color.black);
     }
 
     @Override
@@ -101,28 +78,5 @@ public class StatusActivity extends Activity implements TextWatcher {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//        Log.d(TAG, "beforeTextChanged(" + s + ", " + start + "," + count + "," + after + ")");
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//        Log.d(TAG, "onTextChanged(" + s + ", " + start + "," + count + ")");
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        int remaining = maxCharacters - s.length();
-        Log.d(TAG, "afterTextChanged(" + s + ") count:" + s.length());
-        textViewCharsRemaining.setText(remaining + "");
-        if(remaining > warningLength) {
-            textViewCharsRemaining.setTextColor(okColor);
-        }
-        else {
-            textViewCharsRemaining.setTextColor(warningColor);
-        }
     }
 }
