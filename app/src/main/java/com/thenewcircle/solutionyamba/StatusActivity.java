@@ -13,6 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import com.marakana.android.yamba.clientlib.YambaClient;
+import com.marakana.android.yamba.clientlib.YambaClientException;
+
 import org.w3c.dom.Text;
 
 
@@ -36,7 +39,13 @@ public class StatusActivity extends Activity implements TextWatcher {
         buttonPostStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "buttonPostStatus clicked");
+                Log.d(TAG, "Posting: " + editTextStatusMessage.getText());
+                YambaClient client = new YambaClient("student", "password");
+                try {
+                    client.postStatus(editTextStatusMessage.getText().toString());
+                } catch (YambaClientException e) {
+                    Log.e(TAG, "Error posting " + editTextStatusMessage.getText().toString(), e);
+                }
             }
         });
 
