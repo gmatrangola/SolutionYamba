@@ -27,4 +27,14 @@
         android:id="@+id/buttonPostStatus"
         android:layout_below="@+id/editTextStatusMessage"
         android:layout_alignLeft="@+id/editTextStatusMessage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="140"
+        android:id="@+id/textViewCharsRemaining"
+        android:layout_below="@+id/editTextStatusMessage"
+        android:layout_alignParentRight="true" />
+
 </RelativeLayout>

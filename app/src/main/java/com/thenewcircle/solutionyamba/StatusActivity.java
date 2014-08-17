@@ -2,25 +2,50 @@ package com.thenewcircle.solutionyamba;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
-public class StatusActivity extends Activity {
+import org.w3c.dom.Text;
+
+
+public class StatusActivity extends Activity implements TextWatcher {
 
     private static final String TAG = "newcircle.Yamba." + StatusActivity.class.getSimpleName();
+    private EditText editTextStatusMessage;
+    private TextView textViewCharsRemaining;
+    private int maxCharacters;
+    private int warningLength;
+    private int warningColor;
+    private int okColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_status);
-    }
+        Button buttonPostStatus = (Button) findViewById(R.id.buttonPostStatus);
+        editTextStatusMessage = (EditText) findViewById(R.id.editTextStatusMessage);
 
+        buttonPostStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "buttonPostStatus clicked");
+            }
+        });
 
-    public void buttonPostStatus(View view) {
-        Log.d(TAG, "buttonPostStatus");
+        editTextStatusMessage.addTextChangedListener(this);
+        textViewCharsRemaining = (TextView) findViewById(R.id.textViewCharsRemaining);
+        maxCharacters = getResources().getInteger(R.integer.maximumCharacters);
+        warningLength = getResources().getInteger(R.integer.warningLength);
+        warningColor = getResources().getColor(R.color.warningColor);
+        okColor = getResources().getColor(android.R.color.black);
     }
 
     @Override
@@ -40,5 +65,28 @@ public class StatusActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//        Log.d(TAG, "beforeTextChanged(" + s + ", " + start + "," + count + "," + after + ")");
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//        Log.d(TAG, "onTextChanged(" + s + ", " + start + "," + count + ")");
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        int remaining = maxCharacters - s.length();
+        Log.d(TAG, "afterTextChanged(" + s + ") count:" + s.length());
+        textViewCharsRemaining.setText(remaining + "");
+        if(remaining > warningLength) {
+            textViewCharsRemaining.setTextColor(okColor);
+        }
+        else {
+            textViewCharsRemaining.setTextColor(warningColor);
+        }
     }
 }
